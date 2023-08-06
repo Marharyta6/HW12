@@ -1,5 +1,5 @@
 from classes import AddressBook, Name, Phone, Record, Birthday
-
+from datetime import datetime, timedelta
 
 
 def input_error(func):
@@ -75,6 +75,25 @@ def search_name (*args):
     return address_book.search_contacts(name)
 
 
+@input_error
+def get_birthdays_in_days(*args):
+    days = int(args[0])
+    upcoming_birthdays = []
+    for record in address_book.values():
+        birthday = record.birthday
+        if birthday:
+            today = datetime.now().date()
+            next_birthday = datetime(
+                today.year, birthday.date.month, birthday.date.day).date()
+            if next_birthday < today:
+                next_birthday = datetime(
+                    today.year + 1, birthday.date.month, birthday.date.day).date()
+            days_until_birthday = (next_birthday - today).days
+            if days_until_birthday <= days:
+                upcoming_birthdays.append(record.name)
+    return upcoming_birthdays
+
+
 def greeting_command(*args):
     return "How can I help you?"
 
@@ -95,6 +114,7 @@ COMMANDS = {add_contact: ("add", ),
             search_name: ("search", ),
             greeting_command: ("hello", ),
             exit_command: ("good bye", "close", "exit"),
+            get_birthdays_in_days: ("to",),
             }
 
 
